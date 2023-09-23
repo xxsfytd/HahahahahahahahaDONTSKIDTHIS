@@ -1,6 +1,6 @@
 -- Create a new ScreenGui instance
 local screenGui = Instance.new("ScreenGui")
-screenGui.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui")
+screenGui.Parent = game:GetService("CoreGui")
 
 -- Create a frame that covers the whole screen
 local frame = Instance.new("Frame")
@@ -8,6 +8,7 @@ frame.Size = UDim2.new(1, 0, 1, 0)  -- Size of the frame covers the entire scree
 frame.BackgroundTransparency = 0.5  -- Set transparency as desired
 frame.BackgroundColor3 = Color3.new(0, 0, 0)  -- Set background color as desired
 frame.Parent = screenGui
+frame.ZIndex = 101
 
 -- Create a TextBox to enter the part or model name
 local textBox = Instance.new("TextBox")
@@ -17,12 +18,14 @@ textBox.PlaceholderText = "Enter Part/Model Name"  -- Placeholder text
 textBox.ClearTextOnFocus = false  -- Prevent text from clearing on focus
 textBox.Text = "" -- Set the initial text to empty
 textBox.Parent = frame
+textBox.ZIndex = 102
 
 -- Create a "Goto Part" TextButton on the left side
 local gotoPartButton = Instance.new("TextButton")
 gotoPartButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
 gotoPartButton.Position = UDim2.new(0.05, 0, 0.2, 0)  -- Position on the left side below the textbox
 gotoPartButton.Parent = frame
+gotoPartButton.ZIndex = 102
 
 -- Set text and other properties of the "Goto Part" TextButton
 gotoPartButton.Text = "Goto Part"  -- Set button text to "Goto Part"
@@ -56,6 +59,7 @@ local gotoModelButton = Instance.new("TextButton")
 gotoModelButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
 gotoModelButton.Position = UDim2.new(0.65, 0, 0.2, 0)  -- Position on the right side below the textbox
 gotoModelButton.Parent = frame
+gotoModelButton.ZIndex = 102
 
 -- Set text and other properties of the "Goto Model" TextButton
 gotoModelButton.Text = "Goto Model"  -- Set button text to "Goto Model"
@@ -96,6 +100,7 @@ local scrollFrame = Instance.new("ScrollingFrame")
 scrollFrame.Size = UDim2.new(0.4, 0, 0.6, 0)  -- Size of the scrolling frame (40% of the width, 60% of the height)
 scrollFrame.Position = UDim2.new(0.3, 0, 0.35, 0)  -- Position within the frame
 scrollFrame.Parent = frame
+scrollFrame.ZIndex = 102
 
 -- Set the CanvasSize of the scrolling frame to make it very long
 scrollFrame.CanvasSize = UDim2.new(0, 0, 200000, 0)  -- 200,000 pixels in height
@@ -126,6 +131,7 @@ function populateScrollFrame()
             button.BackgroundTransparency = 0.5
             button.Text = descendant.Name
             button.Parent = scrollFrame
+            button.ZIndex = 103
             
             -- Handle click event on the button
             button.MouseButton1Click:Connect(function()
@@ -143,6 +149,7 @@ local closeButton = Instance.new("TextButton")
 closeButton.Size = UDim2.new(0.1, 0, 0.1, 0)  -- Size of the button (10% of the width, 10% of the height)
 closeButton.Position = UDim2.new(0.9, 0, 0, 0)  -- Position in the top-right corner
 closeButton.Parent = frame
+closeButton.ZIndex = 102
 
 -- Set text and other properties of the "X" button
 closeButton.Text = "X"  -- Set button text to "X"
@@ -159,6 +166,7 @@ searchTextBox.Size = UDim2.new(0.25, 0, 0.1, 0)  -- Size of the search box (30% 
 searchTextBox.Position = UDim2.new(0.375, 0, 0.2, 0)  -- Position on the left side, aligned with the top of the frame
 searchTextBox.PlaceholderText = "Search..."  -- Placeholder text
 searchTextBox.Parent = frame
+searchTextBox.ZIndex = 102
 
 -- Function to filter the text buttons based on the search input
 function filterTextButtons(searchText)
