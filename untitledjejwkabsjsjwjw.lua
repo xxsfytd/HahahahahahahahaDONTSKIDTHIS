@@ -10,6 +10,28 @@ frame.BackgroundColor3 = Color3.new(0, 0, 0)  -- Set background color as desired
 frame.Parent = screenGui
 frame.ZIndex = 101
 
+-- Create a variable to track the visibility state of the frame
+local frameVisible = true
+
+-- Create a function to toggle the visibility of the frame
+local function toggleFrameVisibility()
+    frame.Visible = not frameVisible
+    frameVisible = not frameVisible
+end
+
+-- Create a TextButton named "Hide n Open"
+local hideNOpenButton = Instance.new("TextButton")
+hideNOpenButton.Text = "Hide n Open (locatormp)"
+hideNOpenButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+hideNOpenButton.Position = UDim2.new(0.0, 0, 0.7, 0) -- Adjust position here
+hideNOpenButton.Parent = screenGui
+hideNOpenButton.ZIndex = 200
+
+-- Bind the "Hide n Open" button click event to toggle frame visibility
+hideNOpenButton.MouseButton1Click:Connect(function()
+    toggleFrameVisibility()
+end)
+
 -- Create a TextBox to enter the part or model name
 local textBox = Instance.new("TextBox")
 textBox.Size = UDim2.new(0.6, 0, 0.1, 0)  -- Size of the textbox (60% of the width, 10% of the height)
