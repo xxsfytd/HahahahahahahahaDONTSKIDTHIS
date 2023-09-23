@@ -14,7 +14,8 @@ local textBox = Instance.new("TextBox")
 textBox.Size = UDim2.new(0.6, 0, 0.1, 0)  -- Size of the textbox (60% of the width, 10% of the height)
 textBox.Position = UDim2.new(0.2, 0, 0.05, 0)  -- Position in the middle of the frame
 textBox.PlaceholderText = "Enter Part/Model Name"  -- Placeholder text
-textBox.ClearTextOnFocus = false
+textBox.ClearTextOnFocus = false  -- Prevent text from clearing on focus
+textBox.Text = "" -- Set the initial text to empty
 textBox.Parent = frame
 
 -- Create a "Goto Part" TextButton on the left side
@@ -31,18 +32,20 @@ gotoPartButton.TextSize = 18  -- Set text size
 gotoPartButton.MouseButton1Click:Connect(function()
     local partName = textBox.Text
     
-    -- Search for the part even inside folders using GetDescendants()
-    local foundPart = nil
+    -- Search for all parts with the same name even inside folders using GetDescendants()
+    local foundParts = {}
     local descendants = game.Workspace:GetDescendants()
     for _, descendant in pairs(descendants) do
         if descendant:IsA("BasePart") and descendant.Name == partName then
-            foundPart = descendant
-            break
+            table.insert(foundParts, descendant)
         end
     end
     
-    if foundPart then
-        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(foundPart.CFrame)
+    if #foundParts > 0 then
+        for _, part in pairs(foundParts) do
+            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(part.CFrame)
+            wait(0.05)  -- Wait for a brief moment before teleporting again (adjust as needed)
+        end
     else
         print("Part not found or not valid.")
     end
@@ -62,24 +65,26 @@ gotoModelButton.TextSize = 18  -- Set text size
 gotoModelButton.MouseButton1Click:Connect(function()
     local modelName = textBox.Text
     
-    -- Search for the model even inside folders using GetDescendants()
-    local foundModel = nil
+    -- Search for all models with the same name even inside folders using GetDescendants()
+    local foundModels = {}
     local descendants = game.Workspace:GetDescendants()
     for _, descendant in pairs(descendants) do
         if descendant:IsA("Model") and descendant.Name == modelName then
-            foundModel = descendant
-            break
+            table.insert(foundModels, descendant)
         end
     end
     
-    if foundModel then
-        -- Find a MeshPart within the model
-        local meshPart = foundModel:FindFirstChildWhichIsA("MeshPart")
-        
-        if meshPart then
-            game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(meshPart.Position))
-        else
-            print("Model does not contain a MeshPart.")
+    if #foundModels > 0 then
+        for _, model in pairs(foundModels) do
+            -- Find a MeshPart within the model
+            local meshPart = model:FindFirstChildWhichIsA("MeshPart")
+            
+            if meshPart then
+                game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(meshPart.Position))
+                wait(0.05)  -- Wait for a brief moment before teleporting again (adjust as needed)
+            else
+                print("Model does not contain a MeshPart.")
+            end
         end
     else
         print("Model not found or not valid.")
@@ -144,7 +149,7 @@ end)
 -- Create a TextBox for searching
 local searchTextBox = Instance.new("TextBox")
 searchTextBox.Size = UDim2.new(0.25, 0, 0.1, 0)  -- Size of the search box (30% of the width, 10% of the height)
-searchTextBox.Position = UDim2.new(0.375, 0, 0.2, 0)  -- Position on the left side
+searchTextBox.Position = UDim2.new(0.375, 0, 0.2, 0)  -- Position on the left side, aligned with the top of the frame
 searchTextBox.PlaceholderText = "Search..."  -- Placeholder text
 searchTextBox.Parent = frame
 
