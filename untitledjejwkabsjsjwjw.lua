@@ -105,25 +105,32 @@ local listLayout = Instance.new("UIListLayout")
 listLayout.Parent = scrollFrame
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- Function to populate the scrolling frame with text labels for parts and models
+-- ...
+
+-- Function to populate the scrolling frame with text buttons for parts and models
 function populateScrollFrame()
     -- Clear existing children
     for _, child in pairs(scrollFrame:GetChildren()) do
-        if child:IsA("TextLabel") then
+        if child:IsA("TextButton") then
             child:Destroy()
         end
     end
     
-    -- Iterate through workspace descendants and create text labels
+    -- Iterate through workspace descendants and create text buttons
     local descendants = game.Workspace:GetDescendants()
     for _, descendant in pairs(descendants) do
         if descendant:IsA("BasePart") or descendant:IsA("Model") then
-            local nameLabel = Instance.new("TextLabel")
-            nameLabel.Size = UDim2.new(1, 0, 0, 30)  -- Set the height of each label
-            nameLabel.BackgroundColor3 = Color3.new(1, 1, 1)
-            nameLabel.BackgroundTransparency = 0.5
-            nameLabel.Text = descendant.Name
-            nameLabel.Parent = scrollFrame
+            local button = Instance.new("TextButton")
+            button.Size = UDim2.new(1, 0, 0, 30)  -- Set the height of each button
+            button.BackgroundColor3 = Color3.new(1, 1, 1)
+            button.BackgroundTransparency = 0.5
+            button.Text = descendant.Name
+            button.Parent = scrollFrame
+            
+            -- Handle click event on the button
+            button.MouseButton1Click:Connect(function()
+                textBox.Text = descendant.Name
+            end)
         end
     end
 end
