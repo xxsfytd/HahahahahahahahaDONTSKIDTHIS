@@ -153,22 +153,22 @@ closeButton.MouseButton1Click:Connect(function()
     screenGui:Destroy()
 end)
 
--- Create a TextBox for searching
+-- Create a TextBox for searching outside the scrolling frame
 local searchTextBox = Instance.new("TextBox")
 searchTextBox.Size = UDim2.new(0.25, 0, 0.1, 0)  -- Size of the search box (30% of the width, 10% of the height)
 searchTextBox.Position = UDim2.new(0.375, 0, 0.2, 0)  -- Position on the left side, aligned with the top of the frame
 searchTextBox.PlaceholderText = "Search..."  -- Placeholder text
 searchTextBox.Parent = frame
 
--- Function to filter the text labels based on the search input
-function filterTextLabels(searchText)
-    local textLabels = scrollFrame:GetChildren()
-    for _, child in pairs(textLabels) do
-        if child:IsA("TextLabel") then
-            local label = child
-            local labelName = label.Text:lower()
+-- Function to filter the text buttons based on the search input
+function filterTextButtons(searchText)
+    local textButtons = scrollFrame:GetChildren()
+    for _, child in pairs(textButtons) do
+        if child:IsA("TextButton") then
+            local button = child
+            local buttonName = button.Text:lower()
             local searchTerm = searchText:lower()
-            label.Visible = string.find(labelName, searchTerm) ~= nil
+            button.Visible = string.find(buttonName, searchTerm) ~= nil
         end
     end
 end
@@ -176,5 +176,5 @@ end
 -- Handle searchTextBox text changed event
 searchTextBox:GetPropertyChangedSignal("Text"):Connect(function()
     local searchText = searchTextBox.Text
-    filterTextLabels(searchText)
+    filterTextButtons(searchText)
 end)
