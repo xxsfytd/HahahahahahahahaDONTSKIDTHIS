@@ -14,6 +14,7 @@ local textBox = Instance.new("TextBox")
 textBox.Size = UDim2.new(0.6, 0, 0.1, 0)  -- Size of the textbox (60% of the width, 10% of the height)
 textBox.Position = UDim2.new(0.2, 0, 0.05, 0)  -- Position in the middle of the frame
 textBox.PlaceholderText = "Enter Part/Model Name"  -- Placeholder text
+textBox.ClearTextOnFocus = false
 textBox.Parent = frame
 
 -- Create a "Goto Part" TextButton on the left side
