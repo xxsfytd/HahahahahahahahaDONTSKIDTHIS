@@ -42,6 +42,207 @@ textBox.Text = "" -- Set the initial text to empty
 textBox.Parent = frame
 textBox.ZIndex = 102
 
+-- Create a "Bring Part" TextButton on the left side
+local bringPartButton = Instance.new("TextButton")
+bringPartButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
+bringPartButton.Position = UDim2.new(0.05, 0, 0.35, 0)  -- Position on the left side below the search box
+bringPartButton.Parent = frame
+bringPartButton.ZIndex = 102
+
+-- Set text and other properties of the "Bring Part" TextButton
+bringPartButton.Text = "Bring Part"  -- Set button text to "Bring Part"
+bringPartButton.TextSize = 18  -- Set text size
+
+-- Handle "Bring Part" button click event
+bringPartButton.MouseButton1Click:Connect(function()
+    local partName = textBox.Text
+    
+    -- Search for the specified part
+    local foundParts = {}
+    local descendants = game.Workspace:GetDescendants()
+    for _, descendant in pairs(descendants) do
+        if descendant:IsA("BasePart") and descendant.Name == partName then
+            table.insert(foundParts, descendant)
+        end
+    end
+    
+    if #foundParts > 0 then
+        -- Bring the found part to the player's position
+        for _, part in pairs(foundParts) do
+            part.CFrame = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+        end
+    else
+        print("Part not found or not valid.")
+    end
+end)
+
+-- Create a "Tween to Part" TextButton on the left side
+local tweenToPartButton = Instance.new("TextButton")
+tweenToPartButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
+tweenToPartButton.Position = UDim2.new(0.05, 0, 0.5, 0)  -- Position on the left side below the "Bring Part" button
+tweenToPartButton.Parent = frame
+tweenToPartButton.ZIndex = 102
+
+-- Set text and other properties of the "Tween to Part" TextButton
+tweenToPartButton.Text = "Tween to Part"  -- Set button text to "Tween to Part"
+tweenToPartButton.TextSize = 18  -- Set text size
+
+-- Handle "Tween to Part" button click event
+tweenToPartButton.MouseButton1Click:Connect(function()
+    local partName = textBox.Text
+    
+    -- Search for the specified parts
+    local foundParts = {}
+    local descendants = game.Workspace:GetDescendants()
+    for _, descendant in pairs(descendants) do
+        if descendant:IsA("BasePart") and descendant.Name == partName then
+            table.insert(foundParts, descendant)
+        end
+    end
+    
+    if #foundParts > 0 then
+        local player = game.Players.LocalPlayer
+        local playerPosition = player.Character.HumanoidRootPart.Position
+        
+        local currentIndex = 1  -- Counter to keep track of the current part to tween to
+        
+        -- Function to tween to the next part in the found parts list
+        local function tweenToNextPart()
+            if currentIndex <= #foundParts then
+                local part = foundParts[currentIndex]
+                local partPosition = part.Position
+                local midpoint = (playerPosition + partPosition) / 2
+                
+                local distance = (playerPosition - partPosition).Magnitude
+                local tweenDuration = distance / 5000  -- Adjust speed
+                
+                -- Tween the player to the part's position
+                local tweenInfo = TweenInfo.new(
+                    tweenDuration,
+                    Enum.EasingStyle.Linear,
+                    Enum.EasingDirection.Out
+                )
+                
+                local tween = game:GetService("TweenService"):Create(player.Character.HumanoidRootPart, tweenInfo, {CFrame = CFrame.new(midpoint, partPosition)})
+                
+                -- Connect a function to play the next tween after this one finishes
+                tween.Completed:Connect(function()
+                    currentIndex = currentIndex + 1
+                    tweenToNextPart()  -- Call the function recursively for the next part
+                end)
+                
+                tween:Play()
+            end
+        end
+        
+        -- Start the first tween
+        tweenToNextPart()
+    else
+        print("Part not found or not valid.")
+    end
+end)
+
+-- Create a "Tween to Model" TextButton on the left side
+local tweenToModelButton = Instance.new("TextButton")
+tweenToModelButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
+tweenToModelButton.Position = UDim2.new(0.65, 0, 0.35, 0)  -- Position on the left side below the "Tween to Part" button
+tweenToModelButton.Parent = frame
+tweenToModelButton.ZIndex = 102
+
+-- Set text and other properties of the "Tween to Model" TextButton
+tweenToModelButton.Text = "Tween to Model"  -- Set button text to "Tween to Model"
+tweenToModelButton.TextSize = 18  -- Set text size
+
+-- Handle "Tween to Model" button click event
+tweenToModelButton.MouseButton1Click:Connect(function()
+    local modelName = textBox.Text
+    
+    -- Search for the specified models
+    local foundModels = {}
+    local descendants = game.Workspace:GetDescendants()
+    for _, descendant in pairs(descendants) do
+        if descendant:IsA("Model") and descendant.Name == modelName then
+            table.insert(foundModels, descendant)
+        end
+    end
+    
+    if #foundModels > 0 then
+        local player = game.Players.LocalPlayer
+        local playerPosition = player.Character.HumanoidRootPart.Position
+        
+        local currentIndex = 1  -- Counter to keep track of the current model to tween to
+        
+        -- Function to tween to the next part in the found models list
+        local function tweenToNextPartInModel(model)
+            local parts = {}  -- Parts to tween to
+            
+            -- Search for Parts and MeshParts inside the model
+            local modelDescendants = model:GetDescendants()
+            for _, descendant in pairs(modelDescendants) do
+                if (descendant:IsA("Part") or descendant:IsA("MeshPart")) then
+                    table.insert(parts, descendant)
+                end
+            end
+            
+            if #parts > 0 then
+                local partIndex = 1  -- Counter to keep track of the current part to tween to
+                
+                -- Function to tween to the next part in the found parts list
+                local function tweenToNextPart()
+                    if partIndex <= #parts then
+                        local part = parts[partIndex]
+                        local partPosition = part.Position
+                        local midpoint = (playerPosition + partPosition) / 2
+                        
+                        local distance = (playerPosition - partPosition).Magnitude
+                        local tweenDuration = distance / 5000  -- Adjust speed
+                        
+                        -- Tween the player to the part's position
+                        local tweenInfo = TweenInfo.new(
+                            tweenDuration,
+                            Enum.EasingStyle.Linear,
+                            Enum.EasingDirection.Out
+                        )
+                        
+                        local tween = game:GetService("TweenService"):Create(player.Character.HumanoidRootPart, tweenInfo, {CFrame = CFrame.new(midpoint, partPosition)})
+                        
+                        -- Connect a function to play the next tween after this one finishes
+                        tween.Completed:Connect(function()
+                            partIndex = partIndex + 1
+                            tweenToNextPart()  -- Call the function recursively for the next part
+                        end)
+                        
+                        tween:Play()
+                    end
+                end
+                
+                -- Start tweening to the first part in the model
+                tweenToNextPart()
+            else
+                print("No valid parts found inside the model.")
+            end
+        end
+        
+        -- Start tweening to parts in each found model
+        local function tweenToPartsInModels()
+            if currentIndex <= #foundModels then
+                local model = foundModels[currentIndex]
+                tweenToNextPartInModel(model)
+                
+                -- Connect a function to tween to the next model after parts tweening completes
+                model.ChildAdded:Connect(function()
+                    tweenToPartsInModels()  -- Call the function recursively for the next model
+                end)
+            end
+        end
+        
+        -- Start tweening to parts in the first found model
+        tweenToPartsInModels()
+    else
+        print("Model not found or not valid.")
+    end
+end)
+
 -- Create a "Goto Part" TextButton on the left side
 local gotoPartButton = Instance.new("TextButton")
 gotoPartButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
@@ -119,8 +320,8 @@ end)
 
 -- Create a ScrollFrame to contain the list of parts and models
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(0.4, 0, 0.6, 0)  -- Size of the scrolling frame (40% of the width, 60% of the height)
-scrollFrame.Position = UDim2.new(0.3, 0, 0.35, 0)  -- Position within the frame
+scrollFrame.Size = UDim2.new(0.25, 0, 0.6, 0)  -- Size of the scrolling frame (40% of the width, 60% of the height)
+scrollFrame.Position = UDim2.new(0.375, 0, 0.35, 0)  -- Position within the frame
 scrollFrame.Parent = frame
 scrollFrame.ZIndex = 102
 
