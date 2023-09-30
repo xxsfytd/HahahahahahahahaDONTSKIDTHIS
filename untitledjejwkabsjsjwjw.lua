@@ -32,6 +32,23 @@ hideNOpenButton.MouseButton1Click:Connect(function()
     toggleFrameVisibility()
 end)
 
+-- Create an "Update List" TextButton on the left side
+local updateListButton = Instance.new("TextButton")
+updateListButton.Size = UDim2.new(0.3, 0, 0.1, 0)  -- Size of the button (30% of the width, 10% of the height)
+updateListButton.Position = UDim2.new(0.65, 0, 0.85, 0)  -- Position on the left side below the "Goto Model" button
+updateListButton.Parent = frame
+updateListButton.ZIndex = 102
+
+-- Set text and other properties of the "Update List" TextButton
+updateListButton.Text = "Update List"  -- Set button text to "Update List"
+updateListButton.TextSize = 18  -- Set text size
+
+-- Handle "Update List" button click event
+updateListButton.MouseButton1Click:Connect(function()
+    populateScrollFrame()  -- Call the function to populate the scrolling frame
+end)
+
+
 -- Create a TextBox to enter the part or model name
 local textBox = Instance.new("TextBox")
 textBox.Size = UDim2.new(0.6, 0, 0.1, 0)  -- Size of the textbox (60% of the width, 10% of the height)
@@ -333,8 +350,6 @@ local listLayout = Instance.new("UIListLayout")
 listLayout.Parent = scrollFrame
 listLayout.SortOrder = Enum.SortOrder.LayoutOrder
 
--- ...
-
 -- Function to populate the scrolling frame with text buttons for parts and models
 function populateScrollFrame()
     -- Clear existing children
@@ -345,27 +360,49 @@ function populateScrollFrame()
     end
     
     -- Iterate through workspace descendants and create text buttons
-    local descendants = game.Workspace:GetDescendants()
-    for _, descendant in pairs(descendants) do
+    local function createButton(descendant)
+        local button = Instance.new("TextButton")
+        button.Size = UDim2.new(1, 0, 0, 30)  -- Set the height of each button
+        button.BackgroundColor3 = Color3.new(1, 1, 1)
+        button.BackgroundTransparency = 0.5
+        button.Text = descendant.Name
+        button.Parent = scrollFrame
+        button.ZIndex = 103
+        
+        -- Handle click event on the button
+        button.MouseButton1Click:Connect(function()
+            textBox.Text = descendant.Name
+        end)
+    end
+    
+    -- Create buttons for existing descendants
+    local visibleButtonsCount = 0
+    for _, descendant in pairs(game.Workspace:GetDescendants()) do
         if descendant:IsA("BasePart") or descendant:IsA("Model") then
-            local button = Instance.new("TextButton")
-            button.Size = UDim2.new(1, 0, 0, 30)  -- Set the height of each button
-            button.BackgroundColor3 = Color3.new(1, 1, 1)
-            button.BackgroundTransparency = 0.5
-            button.Text = descendant.Name
-            button.Parent = scrollFrame
-            button.ZIndex = 103
-            
-            -- Handle click event on the button
-            button.MouseButton1Click:Connect(function()
-                textBox.Text = descendant.Name
-            end)
+            createButton(descendant)
+            visibleButtonsCount = visibleButtonsCount + 1
         end
     end
+    
+    -- Set the CanvasSize of the scrolling frame based on the number of visible buttons
+    local buttonHeight = 30  -- Height of each button
+    local spacing = 5  -- Spacing between buttons
+    local totalHeight = (buttonHeight + spacing) * visibleButtonsCount
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    
+    -- Connect a function to create buttons for newly added parts or models
+    game.Workspace.ChildAdded:Connect(function(descendant)
+        if descendant:IsA("BasePart") or descendant:IsA("Model") then
+            createButton(descendant)
+            visibleButtonsCount = visibleButtonsCount + 1
+            
+            -- Update the CanvasSize when a new button is added
+            totalHeight = (buttonHeight + spacing) * visibleButtonsCount
+            scrollFrame.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+        end
+    end)
 end
 
--- Populate the scrolling frame initially
-populateScrollFrame()
 
 -- Create an "X" button in the top-right corner to close the ScreenGui
 local closeButton = Instance.new("TextButton")
